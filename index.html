@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>content.caver1k.net</title>
+<title>Content Browser</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
     body {
@@ -32,6 +32,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        position: relative;
     }
     .item:last-child {
         border-bottom: none;
@@ -62,6 +63,20 @@
     .copy-btn:hover {
         fill: #fff;
     }
+    .copied {
+        fill: #4dff4d !important;
+    }
+    .copied-text {
+        position: absolute;
+        right: 40px;
+        color: #4dff4d;
+        font-size: 14px;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    .copied-text.show {
+        opacity: 1;
+    }
 </style>
 </head>
 <body>
@@ -77,11 +92,7 @@ let currentPath = "";
 
 function updateHeader() {
     const header = document.getElementById("header");
-    if (currentPath === "") {
-        header.textContent = "Content/";
-    } else {
-        header.textContent = "Content/" + currentPath + "/";
-    }
+    header.textContent = currentPath === "" ? "Content/" : "Content/" + currentPath + "/";
 }
 
 async function loadPath(path = "") {
@@ -105,31 +116,45 @@ async function loadPath(path = "") {
     data.forEach(item => {
         const isDir = item.type === "dir";
         const name = item.name;
-        const link = isDir ? `#` : item.download_url;
+
+        const localUrl = `https://content.caver1k.net/${item.path}`;
 
         container.innerHTML += `
             <div class="item">
                 <div class="left">
                     <a class="${isDir ? "folder" : ""}" 
-                       href="${link}" 
+                       href="${isDir ? "#" : localUrl}" 
                        ${isDir ? `onclick="loadPath('${item.path}')" ` : `target="_blank"`}>
                         ${isDir ? "📁" : "📄"} ${name}
                     </a>
                 </div>
+
                 ${!isDir ? `
-                    <svg class="copy-btn" onclick="copyLink('${item.download_url}')" viewBox="0 0 24 24">
+                    <svg class="copy-btn" onclick="copyLink('${localUrl}', this)" viewBox="0 0 24 24">
                         <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 
                         2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z"/>
                     </svg>
+                    <span class="copied-text">Copied!</span>
                 ` : ""}
             </div>
         `;
     });
 }
 
-function copyLink(url) {
+function copyLink(url, iconElement) {
     navigator.clipboard.writeText(url);
+
+    iconElement.classList.add("copied");
+
+    const text = iconElement.parentElement.querySelector(".copied-text");
+    text.classList.add("show");
+
+    setTimeout(() => {
+        iconElement.classList.remove("copied");
+        text.classList.remove("show");
+    }, 1000);
 }
+
 loadPath();
 </script>
 
