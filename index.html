@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Content Browser</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: #eee;
+        margin: 0;
+        padding: 20px;
+    }
+    h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #4db8ff;
+    }
+    #file-list {
+        max-width: 900px;
+        margin: 0 auto;
+        background: #1a1a1a;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .item {
+        padding: 10px;
+        border-bottom: 1px solid #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .item:last-child {
+        border-bottom: none;
+    }
+    .item a {
+        color: #4db8ff;
+        text-decoration: none;
+        font-size: 18px;
+    }
+    .item a:hover {
+        text-decoration: underline;
+    }
+    .folder {
+        font-weight: bold;
+    }
+    .back {
+        margin-bottom: 15px;
+        display: inline-block;
+        color: #ffcc66;
+    }
+</style>
+</head>
+<body>
+
+<h1>Content</h1>
+
+<div id="file-list">Loading…</div>
+
+<script>
+const username = "Caver1K";
+const repo = "Content";
+let currentPath = "";
+
+async function loadPath(path = "") {
+    currentPath = path;
+    const container = document.getElementById("file-list");
+    container.innerHTML = "Loading…";
+
+    const apiUrl = `https://api.github.com/repos/${username}/${repo}/contents/${path}`;
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+
+    container.innerHTML = "";
+
+    if (path !== "") {
+        const up = path.split("/").slice(0, -1).join("/");
+        container.innerHTML += `<a class="back" href="#" onclick="loadPath('${up}')">⬅ Back</a>`;
+    }
+
+    data.forEach(item => {
+        const isDir = item.type === "dir";
+        const name = item.name;
+        const link = isDir ? `#` : item.download_url;
+
+        container.innerHTML += `
+            <div class="item">
+                <a class="${isDir ? "folder" : ""}" 
+                   href="${link}" 
+                   ${isDir ? `onclick="loadPath('${item.path}')" ` : `target="_blank"`}>
+                    ${isDir ? "📁" : "📄"} ${name}
+                </a>
+            </div>
+        `;
+    });
+}
+
+loadPath();
+</script>
+
+</body>
+</html>
