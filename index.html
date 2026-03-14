@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>content.Caver1K.net</title>
+<title>content.caver1k.net</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
     body {
@@ -36,12 +36,12 @@
     .item:last-child {
         border-bottom: none;
     }
-    .item a {
+    .left a {
         color: #4db8ff;
         text-decoration: none;
         font-size: 18px;
     }
-    .item a:hover {
+    .left a:hover {
         text-decoration: underline;
     }
     .folder {
@@ -52,10 +52,20 @@
         display: inline-block;
         color: #ffcc66;
     }
+    .copy-btn {
+        cursor: pointer;
+        width: 22px;
+        height: 22px;
+        fill: #ccc;
+        transition: 0.15s;
+    }
+    .copy-btn:hover {
+        fill: #fff;
+    }
 </style>
 </head>
 <body>
-    
+
 <h1 id="header">Content/</h1>
 
 <div id="file-list">Loading…</div>
@@ -99,16 +109,27 @@ async function loadPath(path = "") {
 
         container.innerHTML += `
             <div class="item">
-                <a class="${isDir ? "folder" : ""}" 
-                   href="${link}" 
-                   ${isDir ? `onclick="loadPath('${item.path}')" ` : `target="_blank"`}>
-                    ${isDir ? "📁" : "📄"} ${name}
-                </a>
+                <div class="left">
+                    <a class="${isDir ? "folder" : ""}" 
+                       href="${link}" 
+                       ${isDir ? `onclick="loadPath('${item.path}')" ` : `target="_blank"`}>
+                        ${isDir ? "📁" : "📄"} ${name}
+                    </a>
+                </div>
+                ${!isDir ? `
+                    <svg class="copy-btn" onclick="copyLink('${item.download_url}')" viewBox="0 0 24 24">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 
+                        2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z"/>
+                    </svg>
+                ` : ""}
             </div>
         `;
     });
 }
 
+function copyLink(url) {
+    navigator.clipboard.writeText(url);
+}
 loadPath();
 </script>
 
