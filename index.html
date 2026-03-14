@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Content Browser</title>
+<title>content.Caver1K.net</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
     body {
@@ -13,10 +13,11 @@
         padding: 20px;
     }
     h1 {
-        font-size: 48px;
+        font-size: 36px;
         margin-bottom: 20px;
         text-align: center;
         color: #4db8ff;
+        word-break: break-all;
     }
     #file-list {
         max-width: 900px;
@@ -55,7 +56,7 @@
 </head>
 <body>
 
-<h1>Content</h1>
+<h1 id="header">Content/</h1>
 
 <div id="file-list">Loading…</div>
 
@@ -64,8 +65,19 @@ const username = "Caver1K";
 const repo = "Content";
 let currentPath = "";
 
+function updateHeader() {
+    const header = document.getElementById("header");
+    if (currentPath === "") {
+        header.textContent = "Content/";
+    } else {
+        header.textContent = "Content/" + currentPath + "/";
+    }
+}
+
 async function loadPath(path = "") {
     currentPath = path;
+    updateHeader();
+
     const container = document.getElementById("file-list");
     container.innerHTML = "Loading…";
 
